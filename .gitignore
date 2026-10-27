@@ -1,0 +1,23 @@
+# Node dependencies
+node_modules/
+client/node_modules/
+server/node_modules/
+
+# Production build output
+client/dist/
+dist/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+
+# Environment local overrides (use .env.example as template)
+.env.local
+.env.*.local
+
+# Editor and OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
