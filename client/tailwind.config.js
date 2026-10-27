@@ -4,30 +4,29 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
-  darkMode: 'class',
   theme: {
     extend: {
       colors: {
-        cyber: {
-          darkest: '#090d16',
-          dark: '#0f172a',
-          surface: '#172033',
-          card: '#1e293b',
-          border: 'rgba(255, 255, 255, 0.08)',
-          glow: '#06b6d4',
-          accent: '#6366f1',
-          success: '#10b981',
-          warning: '#f59e0b',
-        }
+        primary: {
+          50: '#eff6ff',
+          100: '#dbeafe',
+          200: '#bfdbfe',
+          300: '#93c5fd',
+          400: '#60a5fa',
+          500: '#3b82f6',
+          600: '#2563eb', // Clean Blue Primary
+          700: '#1d4ed8',
+          800: '#1e40af', // Navy Blue
+          900: '#1e3a8a',
+        },
       },
       fontFamily: {
         mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
         sans: ['Inter', 'system-ui', 'sans-serif'],
       },
       boxShadow: {
-        'glow-cyan': '0 0 25px -5px rgba(6, 182, 212, 0.3)',
-        'glow-indigo': '0 0 25px -5px rgba(99, 102, 241, 0.3)',
-        'glow-emerald': '0 0 25px -5px rgba(16, 185, 129, 0.3)',
+        'soft': '0 2px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02)',
+        'soft-hover': '0 10px 25px -5px rgba(37, 99, 235, 0.08), 0 8px 10px -6px rgba(37, 99, 235, 0.04)',
       }
     },
   },

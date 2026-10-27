@@ -6,10 +6,8 @@ import {
   Layers, 
   FileText, 
   Cpu, 
-  GitCommit, 
   Plus, 
   Trash2,
-  CheckCircle,
   AlertCircle
 } from 'lucide-react';
 import { projectsAPI } from '../services/api';
@@ -17,11 +15,11 @@ import { projectsAPI } from '../services/api';
 const categories = ['Web App', 'Network Topology', 'Game Dev', 'System Admin'];
 
 export default function ProjectFormModal({ isOpen, onClose, onSuccess, initialData = null }) {
-  const [activeTab, setActiveTab] = useState('sql'); // 'sql' | 'markdown' | 'specs'
+  const [activeTab, setActiveTab] = useState('sql');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   
-  // MariaDB Core fields
+  // Core fields
   const [title, setTitle] = useState('');
   const [slug, setSlug] = useState('');
   const [category, setCategory] = useState('Web App');
@@ -31,7 +29,7 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess, initialDa
   const [featured, setFeatured] = useState(false);
   const [tagsInput, setTagsInput] = useState('');
 
-  // MongoDB Document fields
+  // Details fields
   const [markdownContent, setMarkdownContent] = useState('');
   const [architectureDiagramUrl, setArchitectureDiagramUrl] = useState('');
   const [specsList, setSpecsList] = useState([{ key: '', value: '' }]);
@@ -52,7 +50,6 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess, initialDa
       setMarkdownContent(details.markdownContent || '');
       setArchitectureDiagramUrl(details.architectureDiagramUrl || '');
 
-      // Specs
       if (details.systemSpecs && typeof details.systemSpecs === 'object') {
         const specArr = Object.entries(details.systemSpecs).map(([k, v]) => ({ key: k, value: String(v) }));
         setSpecsList(specArr.length > 0 ? specArr : [{ key: '', value: '' }]);
@@ -60,7 +57,6 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess, initialDa
         setSpecsList([{ key: '', value: '' }]);
       }
 
-      // Changelog
       if (Array.isArray(details.changelog) && details.changelog.length > 0) {
         setChangelogList(
           details.changelog.map((c) => ({
@@ -73,7 +69,6 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess, initialDa
         setChangelogList([{ version: '', notes: '', releaseDate: '' }]);
       }
     } else {
-      // Reset form for create
       setTitle('');
       setSlug('');
       setCategory('Web App');
@@ -85,16 +80,15 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess, initialDa
       setMarkdownContent('# Ringkasan Proyek\n\nTulis dokumentasi teknis arsitektur di sini.');
       setArchitectureDiagramUrl('');
       setSpecsList([
-        { key: 'OS', value: 'Ubuntu 24.04 LTS' },
-        { key: 'Memory', value: '8GB DDR5' },
+        { key: 'Frontend', value: 'React 19, Tailwind CSS' },
+        { key: 'Backend', value: 'Express REST API' },
       ]);
-      setChangelogList([{ version: 'v1.0.0', notes: 'Rilis inisial', releaseDate: new Date().toISOString().split('T')[0] }]);
+      setChangelogList([{ version: 'v1.0.0', notes: 'Initial public release', releaseDate: new Date().toISOString().split('T')[0] }]);
     }
     setError('');
     setActiveTab('sql');
   }, [initialData, isOpen]);
 
-  // Handle Specs
   const addSpecRow = () => setSpecsList([...specsList, { key: '', value: '' }]);
   const removeSpecRow = (idx) => setSpecsList(specsList.filter((_, i) => i !== idx));
   const updateSpecRow = (idx, field, val) => {
@@ -103,7 +97,6 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess, initialDa
     setSpecsList(updated);
   };
 
-  // Handle Changelog
   const addChangelogRow = () => setChangelogList([...changelogList, { version: '', notes: '', releaseDate: '' }]);
   const removeChangelogRow = (idx) => setChangelogList(changelogList.filter((_, i) => i !== idx));
   const updateChangelogRow = (idx, field, val) => {
@@ -122,7 +115,6 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess, initialDa
       return;
     }
 
-    // Convert specs array to object
     const systemSpecs = {};
     specsList.forEach((s) => {
       if (s.key.trim()) {
@@ -130,7 +122,6 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess, initialDa
       }
     });
 
-    // Clean changelog
     const changelog = changelogList
       .filter((c) => c.version.trim() && c.notes.trim())
       .map((c) => ({
@@ -139,7 +130,6 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess, initialDa
         releaseDate: c.releaseDate ? new Date(c.releaseDate) : new Date(),
       }));
 
-    // Parse tags
     const tags = tagsInput
       .split(',')
       .map((t) => t.trim())
@@ -180,41 +170,41 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess, initialDa
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm">
-      <div className="relative w-full max-w-4xl glass-panel rounded-2xl border border-slate-700 shadow-2xl flex flex-col max-h-[92vh] overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+      <div className="relative w-full max-w-4xl bg-white rounded-2xl border border-slate-200 shadow-2xl flex flex-col max-h-[92vh] overflow-hidden">
         
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 bg-slate-900/90 border-b border-slate-800">
+        <div className="flex items-center justify-between px-6 py-4 bg-slate-50 border-b border-slate-200">
           <div>
-            <h2 className="text-lg font-bold text-white flex items-center gap-2">
-              <span className="w-2 h-5 rounded bg-cyan-500 inline-block" />
-              {initialData ? 'Edit Proyek (Dual-Store Sync)' : 'Tambah Proyek Baru (MariaDB + MongoDB)'}
+            <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+              <span className="w-2 h-5 rounded bg-blue-600 inline-block" />
+              {initialData ? 'Edit Proyek' : 'Tambah Proyek Baru'}
             </h2>
-            <p className="text-xs text-slate-400 mt-0.5">
-              Data relasional disimpan ke MariaDB, dokumen teknis & spesifikasi disimpan ke MongoDB.
+            <p className="text-xs text-slate-500 mt-0.5">
+              Kelola entitas portofolio dan dokumentasi teknis studi kasus
             </p>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white"
+            className="p-1.5 rounded-lg bg-white border border-slate-200 text-slate-500 hover:text-slate-800"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex border-b border-slate-800 bg-[#060a14] px-6">
+        <div className="flex border-b border-slate-200 bg-slate-50/50 px-6">
           <button
             type="button"
             onClick={() => setActiveTab('sql')}
             className={`flex items-center gap-2 py-3 px-4 text-xs font-semibold uppercase tracking-wider border-b-2 transition-colors ${
               activeTab === 'sql'
-                ? 'border-emerald-400 text-emerald-400'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
+                ? 'border-blue-600 text-blue-600'
+                : 'border-transparent text-slate-500 hover:text-slate-800'
             }`}
           >
-            <Database className="w-4 h-4" />
-            1. Entitas Inti (MariaDB SQL)
+            <Layers className="w-4 h-4" />
+            1. Metadata Inti
           </button>
 
           <button
@@ -222,12 +212,12 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess, initialDa
             onClick={() => setActiveTab('markdown')}
             className={`flex items-center gap-2 py-3 px-4 text-xs font-semibold uppercase tracking-wider border-b-2 transition-colors ${
               activeTab === 'markdown'
-                ? 'border-cyan-400 text-cyan-400'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
+                ? 'border-blue-600 text-blue-600'
+                : 'border-transparent text-slate-500 hover:text-slate-800'
             }`}
           >
             <FileText className="w-4 h-4" />
-            2. Studi Kasus (MongoDB Doc)
+            2. Dokumentasi Studi Kasus
           </button>
 
           <button
@@ -235,65 +225,65 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess, initialDa
             onClick={() => setActiveTab('specs')}
             className={`flex items-center gap-2 py-3 px-4 text-xs font-semibold uppercase tracking-wider border-b-2 transition-colors ${
               activeTab === 'specs'
-                ? 'border-indigo-400 text-indigo-400'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
+                ? 'border-blue-600 text-blue-600'
+                : 'border-transparent text-slate-500 hover:text-slate-800'
             }`}
           >
             <Cpu className="w-4 h-4" />
-            3. Spek & Changelog (MongoDB)
+            3. Spesifikasi & Changelog
           </button>
         </div>
 
         {/* Form Body */}
         <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-6">
           {error && (
-            <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-xs flex items-center gap-2">
+            <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{error}</span>
             </div>
           )}
 
-          {/* TAB 1: MariaDB SQL Core */}
+          {/* TAB 1: Core Metadata */}
           {activeTab === 'sql' && (
             <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-medium text-slate-300 mb-1">
-                    Judul Proyek <span className="text-red-400">*</span>
+                  <label className="block text-xs font-medium text-slate-700 mb-1">
+                    Judul Proyek <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
                     required
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    placeholder="misal: Enterprise Multi-Site SD-WAN"
-                    className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-cyan-500"
+                    placeholder="misal: Praktis - LMS"
+                    className="w-full px-3 py-2 rounded-lg bg-white border border-slate-300 text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:border-blue-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-slate-300 mb-1">
+                  <label className="block text-xs font-medium text-slate-700 mb-1">
                     Custom Slug (Opsional - otomatis dibuat jika kosong)
                   </label>
                   <input
                     type="text"
                     value={slug}
                     onChange={(e) => setSlug(e.target.value)}
-                    placeholder="enterprise-multisite-sdwan"
-                    className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white placeholder-slate-500 text-sm font-mono focus:outline-none focus:border-cyan-500"
+                    placeholder="praktis-lab-management"
+                    className="w-full px-3 py-2 rounded-lg bg-white border border-slate-300 text-slate-900 placeholder-slate-400 text-sm font-mono focus:outline-none focus:border-blue-500"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-xs font-medium text-slate-300 mb-1">
-                    Kategori <span className="text-red-400">*</span>
+                  <label className="block text-xs font-medium text-slate-700 mb-1">
+                    Kategori <span className="text-red-500">*</span>
                   </label>
                   <select
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white text-sm focus:outline-none focus:border-cyan-500"
+                    className="w-full px-3 py-2 rounded-lg bg-white border border-slate-300 text-slate-900 text-sm focus:outline-none focus:border-blue-500"
                   >
                     {categories.map((c) => (
                       <option key={c} value={c}>{c}</option>
@@ -302,25 +292,25 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess, initialDa
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-slate-300 mb-1">
+                  <label className="block text-xs font-medium text-slate-700 mb-1">
                     Lisensi
                   </label>
                   <input
                     type="text"
                     value={license}
                     onChange={(e) => setLicense(e.target.value)}
-                    placeholder="MIT, Apache-2.0, GPL-3.0"
-                    className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white text-sm focus:outline-none focus:border-cyan-500"
+                    placeholder="MIT, Apache-2.0"
+                    className="w-full px-3 py-2 rounded-lg bg-white border border-slate-300 text-slate-900 text-sm focus:outline-none focus:border-blue-500"
                   />
                 </div>
 
                 <div className="flex items-center pt-6">
-                  <label className="flex items-center gap-2 cursor-pointer text-sm text-slate-300">
+                  <label className="flex items-center gap-2 cursor-pointer text-sm text-slate-700">
                     <input
                       type="checkbox"
                       checked={featured}
                       onChange={(e) => setFeatured(e.target.checked)}
-                      className="w-4 h-4 rounded bg-slate-900 border-slate-700 text-cyan-500 focus:ring-0"
+                      className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-0"
                     />
                     <span>Tandai sebagai Featured</span>
                   </label>
@@ -329,78 +319,70 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess, initialDa
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-medium text-slate-300 mb-1">
+                  <label className="block text-xs font-medium text-slate-700 mb-1">
                     URL Repository GitHub
                   </label>
                   <input
                     type="url"
                     value={repoUrl}
                     onChange={(e) => setRepoUrl(e.target.value)}
-                    placeholder="https://github.com/username/project"
-                    className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white text-sm focus:outline-none focus:border-cyan-500"
+                    placeholder="https://github.com/..."
+                    className="w-full px-3 py-2 rounded-lg bg-white border border-slate-300 text-slate-900 text-sm focus:outline-none focus:border-blue-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-slate-300 mb-1">
-                    URL Live Demo / Tunnel
+                  <label className="block text-xs font-medium text-slate-700 mb-1">
+                    URL Live Demo
                   </label>
                   <input
                     type="url"
                     value={demoUrl}
                     onChange={(e) => setDemoUrl(e.target.value)}
-                    placeholder="https://demo.devshowcase.local"
-                    className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white text-sm focus:outline-none focus:border-cyan-500"
+                    placeholder="https://demo.example.com"
+                    className="w-full px-3 py-2 rounded-lg bg-white border border-slate-300 text-slate-900 text-sm focus:outline-none focus:border-blue-500"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">
+                <label className="block text-xs font-medium text-slate-700 mb-1">
                   Tags Tech-Stack (Pisahkan dengan koma)
                 </label>
                 <input
                   type="text"
                   value={tagsInput}
                   onChange={(e) => setTagsInput(e.target.value)}
-                  placeholder="React, WireGuard, Node.js, Docker, Linux"
-                  className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white text-sm focus:outline-none focus:border-cyan-500"
+                  placeholder="React 19, Express.js, Docker, MongoDB"
+                  className="w-full px-3 py-2 rounded-lg bg-white border border-slate-300 text-slate-900 text-sm focus:outline-none focus:border-blue-500"
                 />
-                <span className="text-[11px] text-slate-400 mt-1 block">
-                  Tag akan otomatis disimpan ke tabel MariaDB <code className="text-cyan-400">tags</code> dan dipetakan di tabel pivot <code className="text-cyan-400">project_tags</code>.
-                </span>
               </div>
             </div>
           )}
 
-          {/* TAB 2: MongoDB Markdown Document */}
+          {/* TAB 2: Markdown Document */}
           {activeTab === 'markdown' && (
             <div className="space-y-4">
               <div>
-                <div className="flex items-center justify-between mb-1">
-                  <label className="block text-xs font-medium text-slate-300">
-                    Dokumentasi Studi Kasus / Whitepaper (Markdown)
-                  </label>
-                  <span className="text-[11px] font-mono text-cyan-400">
-                    Mendukung syntax highlight, headers, diagram ASCII
-                  </span>
-                </div>
+                <label className="block text-xs font-medium text-slate-700 mb-1">
+                  Dokumentasi Studi Kasus (Markdown)
+                </label>
                 <textarea
                   rows={14}
                   value={markdownContent}
                   onChange={(e) => setMarkdownContent(e.target.value)}
                   placeholder="# Arsitektur Sistem..."
-                  className="w-full p-4 rounded-lg bg-[#02050e] border border-slate-800 text-slate-200 font-mono text-xs leading-relaxed focus:outline-none focus:border-cyan-500"
+                  className="w-full p-4 rounded-lg bg-slate-50 border border-slate-300 text-slate-900 font-mono text-xs leading-relaxed focus:outline-none focus:border-blue-500"
                 />
               </div>
             </div>
           )}
 
-          {/* TAB 3: MongoDB Specs & Changelog */}
+          {/* TAB 3: Specs & Changelog */}
           {activeTab === 'specs' && (
             <div className="space-y-6">
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">
+                <label className="block text-xs font-medium text-slate-700 mb-1">
                   URL Diagram Arsitektur (Gambar)
                 </label>
                 <input
@@ -408,23 +390,23 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess, initialDa
                   value={architectureDiagramUrl}
                   onChange={(e) => setArchitectureDiagramUrl(e.target.value)}
                   placeholder="https://images.unsplash.com/..."
-                  className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white text-sm focus:outline-none focus:border-cyan-500"
+                  className="w-full px-3 py-2 rounded-lg bg-white border border-slate-300 text-slate-900 text-sm focus:outline-none focus:border-blue-500"
                 />
               </div>
 
               {/* Dynamic System Specs */}
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="block text-xs font-medium text-slate-300">
-                    Spesifikasi Sistem & Hardware (Key-Value Dinamis)
+                  <label className="block text-xs font-medium text-slate-700">
+                    Spesifikasi Sistem (Key-Value)
                   </label>
                   <button
                     type="button"
                     onClick={addSpecRow}
-                    className="flex items-center gap-1 text-xs text-cyan-400 hover:text-cyan-300"
+                    className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 font-medium"
                   >
                     <Plus className="w-3.5 h-3.5" />
-                    Tambah Spesifikasi
+                    Tambah Baris
                   </button>
                 </div>
 
@@ -433,22 +415,22 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess, initialDa
                     <div key={idx} className="flex items-center gap-2">
                       <input
                         type="text"
-                        placeholder="Key (misal: Routing Engine)"
+                        placeholder="Key (misal: Frontend)"
                         value={spec.key}
                         onChange={(e) => updateSpecRow(idx, 'key', e.target.value)}
-                        className="w-1/3 px-3 py-1.5 rounded bg-slate-900 border border-slate-700 text-white text-xs font-mono"
+                        className="w-1/3 px-3 py-1.5 rounded bg-white border border-slate-300 text-slate-900 text-xs font-mono"
                       />
                       <input
                         type="text"
-                        placeholder="Value (misal: BGP + WireGuard Mesh)"
+                        placeholder="Value (misal: React 19 + Vite)"
                         value={spec.value}
                         onChange={(e) => updateSpecRow(idx, 'value', e.target.value)}
-                        className="flex-1 px-3 py-1.5 rounded bg-slate-900 border border-slate-700 text-white text-xs font-mono"
+                        className="flex-1 px-3 py-1.5 rounded bg-white border border-slate-300 text-slate-900 text-xs font-mono"
                       />
                       <button
                         type="button"
                         onClick={() => removeSpecRow(idx)}
-                        className="p-1.5 text-slate-400 hover:text-red-400"
+                        className="p-1.5 text-slate-400 hover:text-red-500"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -460,13 +442,13 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess, initialDa
               {/* Dynamic Changelog */}
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="block text-xs font-medium text-slate-300">
+                  <label className="block text-xs font-medium text-slate-700">
                     Riwayat Rilis / Changelog
                   </label>
                   <button
                     type="button"
                     onClick={addChangelogRow}
-                    className="flex items-center gap-1 text-xs text-cyan-400 hover:text-cyan-300"
+                    className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 font-medium"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     Tambah Versi
@@ -475,26 +457,26 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess, initialDa
 
                 <div className="space-y-3">
                   {changelogList.map((item, idx) => (
-                    <div key={idx} className="p-3 rounded-lg bg-slate-900/60 border border-slate-800 space-y-2">
+                    <div key={idx} className="p-3 rounded-lg bg-slate-50 border border-slate-200 space-y-2">
                       <div className="flex items-center gap-2">
                         <input
                           type="text"
                           placeholder="Versi (v1.0.0)"
                           value={item.version}
                           onChange={(e) => updateChangelogRow(idx, 'version', e.target.value)}
-                          className="w-28 px-2.5 py-1 rounded bg-slate-800 border border-slate-700 text-white text-xs font-mono"
+                          className="w-28 px-2.5 py-1 rounded bg-white border border-slate-300 text-slate-900 text-xs font-mono"
                         />
                         <input
                           type="date"
                           value={item.releaseDate}
                           onChange={(e) => updateChangelogRow(idx, 'releaseDate', e.target.value)}
-                          className="w-36 px-2.5 py-1 rounded bg-slate-800 border border-slate-700 text-white text-xs font-mono"
+                          className="w-36 px-2.5 py-1 rounded bg-white border border-slate-300 text-slate-900 text-xs font-mono"
                         />
                         <div className="flex-1" />
                         <button
                           type="button"
                           onClick={() => removeChangelogRow(idx)}
-                          className="p-1 text-slate-400 hover:text-red-400"
+                          className="p-1 text-slate-400 hover:text-red-500"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -504,7 +486,7 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess, initialDa
                         placeholder="Catatan rilis / fitur..."
                         value={item.notes}
                         onChange={(e) => updateChangelogRow(idx, 'notes', e.target.value)}
-                        className="w-full px-2.5 py-1 rounded bg-slate-800 border border-slate-700 text-white text-xs"
+                        className="w-full px-2.5 py-1 rounded bg-white border border-slate-300 text-slate-900 text-xs"
                       />
                     </div>
                   ))}
@@ -515,25 +497,25 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess, initialDa
           )}
 
           {/* Footer Submit Buttons */}
-          <div className="pt-4 border-t border-slate-800 flex items-center justify-between">
+          <div className="pt-4 border-t border-slate-200 flex items-center justify-between">
             <span className="text-xs text-slate-400 font-mono">
-              MariaDB Transaction + MongoDB Upsert
+              Dual-Store Synchronized Storage
             </span>
             <div className="flex items-center gap-3">
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 rounded-lg bg-slate-800 text-slate-300 hover:text-white text-xs font-medium"
+                className="px-4 py-2 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 text-xs font-medium"
               >
                 Batal
               </button>
               <button
                 type="submit"
                 disabled={loading}
-                className="flex items-center gap-2 px-5 py-2 rounded-lg bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white text-xs font-bold shadow-glow-cyan transition-all disabled:opacity-50"
+                className="flex items-center gap-2 px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-sm transition-all disabled:opacity-50"
               >
                 <Save className="w-4 h-4" />
-                {loading ? 'Menyinkronkan...' : initialData ? 'Perbarui Proyek' : 'Simpan ke Dual-Database'}
+                {loading ? 'Menyimpan...' : initialData ? 'Perbarui Proyek' : 'Simpan Proyek'}
               </button>
             </div>
           </div>

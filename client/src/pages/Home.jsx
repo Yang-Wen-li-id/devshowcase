@@ -1,19 +1,22 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { 
   Search, 
-  Layers, 
-  Database, 
-  Activity, 
   Terminal, 
   Cpu, 
   Filter, 
   Sparkles,
   ArrowRight,
-  Shield,
+  ShieldCheck,
   Server,
-  RefreshCw
+  RefreshCw,
+  Code2,
+  Layers,
+  CheckCircle2,
+  FileCode2,
+  Workflow
 } from 'lucide-react';
-import { projectsAPI, healthAPI } from '../services/api';
+import { projectsAPI } from '../services/api';
 import ProjectCard from '../components/ProjectCard';
 
 const CATEGORIES = ['All', 'Web App', 'Network Topology', 'Game Dev', 'System Admin'];
@@ -42,7 +45,7 @@ export default function Home() {
       setProjects(res.data?.data || []);
     } catch (err) {
       console.error('Fetch projects error:', err);
-      setError('Gagal memuat daftar proyek. Pastikan server backend dan database berjalan.');
+      setError('Gagal memuat daftar proyek. Silakan coba beberapa saat lagi.');
     } finally {
       setLoading(false);
     }
@@ -69,61 +72,50 @@ export default function Home() {
   }, [selectedCategory, selectedTag, searchQuery]);
 
   return (
-    <div className="min-h-screen bg-grid-pattern pb-16">
+    <div className="min-h-screen bg-subtle-pattern pb-20">
       
-      {/* Hero Section */}
-      <section className="relative pt-16 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto overflow-hidden">
-        
-        {/* Glow Spheres */}
-        <div className="absolute top-10 left-1/2 -translate-x-1/2 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute top-20 right-10 w-72 h-72 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="relative text-center space-y-5 max-w-3xl mx-auto">
+      {/* Minimalist Hero Section */}
+      <section className="relative pt-16 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div className="text-center space-y-4 max-w-3xl mx-auto">
           
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-slate-900/90 border border-cyan-500/30 text-cyan-300 text-xs font-mono shadow-glow-cyan">
-            <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
-            <span>Dual-Database Platform (MariaDB + MongoDB)</span>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-semibold">
+            <Sparkles className="w-3.5 h-3.5 text-blue-600" />
+            <span>Production Systems & Architecture Portfolio</span>
           </div>
 
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-tight">
-            Platform Rekayasa Teknis & <br />
-            <span className="bg-gradient-to-r from-cyan-400 via-indigo-300 to-emerald-400 bg-clip-text text-transparent">
-              Audit Akses Proyek
-            </span>
+          <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-900 leading-tight">
+            Engineering & Technical <br className="hidden sm:inline" />
+            <span className="text-blue-600">Project Showcase</span>
           </h1>
 
-          <p className="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
-            Eksplorasi portofolio arsitektur jaringan, aplikasi web full-stack berkinerja tinggi, dan otomatisasi server dengan telemetri audit akses transparan.
+          <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
+            Koleksi proyek rekayasa perangkat lunak full-stack, topologi jaringan enterprise, dan infrastruktur sistem berkinerja tinggi.
           </p>
 
-          {/* Quick Metrics Bar */}
-          <div className="pt-4 grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-2xl mx-auto">
-            <div className="glass-panel rounded-xl p-3 text-center border-slate-800">
-              <span className="text-2xl font-extrabold text-cyan-400">{projects.length}</span>
-              <span className="text-[11px] font-mono text-slate-400 block">Proyek Terdaftar</span>
-            </div>
-            <div className="glass-panel rounded-xl p-3 text-center border-slate-800">
-              <span className="text-2xl font-extrabold text-emerald-400">MariaDB</span>
-              <span className="text-[11px] font-mono text-slate-400 block">Relational ACID</span>
-            </div>
-            <div className="glass-panel rounded-xl p-3 text-center border-slate-800">
-              <span className="text-2xl font-extrabold text-indigo-400">MongoDB</span>
-              <span className="text-[11px] font-mono text-slate-400 block">Doc & Telemetry</span>
-            </div>
-            <div className="glass-panel rounded-xl p-3 text-center border-slate-800">
-              <span className="text-2xl font-extrabold text-amber-400">&lt; 20ms</span>
-              <span className="text-[11px] font-mono text-slate-400 block">Avg Response</span>
-            </div>
+          {/* Quick Stats Banner */}
+          <div className="pt-2 flex items-center justify-center gap-6 sm:gap-10 text-xs font-medium text-slate-500">
+            <span className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-blue-600" />
+              {projects.length} Featured Engineering Projects
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-500" />
+              Verified Case Studies
+            </span>
+            <span className="hidden sm:flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-indigo-500" />
+              Production Architecture
+            </span>
           </div>
 
         </div>
       </section>
 
       {/* Main Filter & Showcase Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section id="projects" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Controls Bar */}
-        <div className="glass-panel rounded-2xl p-4 md:p-6 mb-8 space-y-4 border-slate-800">
+        <div className="bg-white rounded-2xl p-5 mb-8 space-y-4 border border-slate-200 shadow-soft">
           
           {/* Search + Category Tabs */}
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
@@ -133,10 +125,10 @@ export default function Home() {
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               <input
                 type="text"
-                placeholder="Cari judul proyek atau slug..."
+                placeholder="Cari nama proyek atau slug..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 rounded-xl bg-slate-900/90 border border-slate-700/80 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-cyan-500"
+                className="w-full pl-10 pr-4 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:border-blue-500 focus:bg-white transition-all"
               />
             </div>
 
@@ -146,10 +138,10 @@ export default function Home() {
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
+                  className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
                     selectedCategory === cat
-                      ? 'bg-cyan-500 text-black shadow-glow-cyan'
-                      : 'bg-slate-900/80 text-slate-300 hover:text-white hover:bg-slate-800'
+                      ? 'bg-blue-600 text-white shadow-sm'
+                      : 'bg-slate-100 text-slate-600 hover:text-slate-900 hover:bg-slate-200'
                   }`}
                 >
                   {cat}
@@ -161,31 +153,31 @@ export default function Home() {
 
           {/* Tech-Stack Tag Filter Chips */}
           {tags.length > 0 && (
-            <div className="pt-3 border-t border-slate-800/80 flex items-center gap-2 overflow-x-auto pb-1 text-xs">
-              <span className="text-slate-400 font-mono flex items-center gap-1 shrink-0">
-                <Filter className="w-3 h-3 text-cyan-400" />
+            <div className="pt-3 border-t border-slate-100 flex items-center gap-2 overflow-x-auto pb-1 text-xs">
+              <span className="text-slate-500 font-medium flex items-center gap-1 shrink-0">
+                <Filter className="w-3.5 h-3.5 text-blue-600" />
                 Filter Tag:
               </span>
 
               <button
                 onClick={() => setSelectedTag('All')}
-                className={`px-2.5 py-1 rounded-md text-[11px] font-mono transition-colors shrink-0 ${
+                className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors shrink-0 ${
                   selectedTag === 'All'
-                    ? 'bg-slate-200 text-slate-900 font-bold'
-                    : 'bg-slate-800/90 text-slate-400 hover:text-white'
+                    ? 'bg-slate-900 text-white font-semibold'
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900'
                 }`}
               >
-                Semua Tag
+                Semua
               </button>
 
               {tags.map((t) => (
                 <button
                   key={t.id || t.name}
                   onClick={() => setSelectedTag(selectedTag === t.name ? 'All' : t.name)}
-                  className={`px-2.5 py-1 rounded-md text-[11px] font-mono transition-colors shrink-0 ${
+                  className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors shrink-0 ${
                     selectedTag === t.name
-                      ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold'
-                      : 'bg-slate-800/80 text-slate-300 hover:text-white border border-slate-700/60'
+                      ? 'bg-blue-50 text-blue-700 border border-blue-200 font-bold'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900'
                   }`}
                 >
                   {t.name}
@@ -199,29 +191,29 @@ export default function Home() {
         {/* Project Grid */}
         {loading ? (
           <div className="py-24 text-center">
-            <RefreshCw className="w-8 h-8 text-cyan-400 animate-spin mx-auto mb-3" />
-            <p className="text-sm text-slate-400 font-mono">Memuat portofolio rekayasa teknis...</p>
+            <RefreshCw className="w-8 h-8 text-blue-600 animate-spin mx-auto mb-3" />
+            <p className="text-sm text-slate-500 font-medium">Memuat katalog proyek rekayasa...</p>
           </div>
         ) : error ? (
-          <div className="glass-panel rounded-2xl p-8 text-center border-red-500/30 max-w-lg mx-auto">
-            <p className="text-red-400 text-sm mb-4">{error}</p>
+          <div className="bg-white rounded-2xl p-8 text-center border border-red-200 max-w-lg mx-auto shadow-soft">
+            <p className="text-red-600 text-sm mb-4">{error}</p>
             <button
               onClick={fetchProjects}
-              className="px-4 py-2 rounded-lg bg-slate-800 text-slate-200 hover:text-white text-xs font-semibold"
+              className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 text-xs font-semibold shadow-sm"
             >
-              Coba Muat Ulang
+              Coba Lagi
             </button>
           </div>
         ) : projects.length === 0 ? (
-          <div className="glass-panel rounded-2xl p-12 text-center border-slate-800 max-w-md mx-auto">
-            <Layers className="w-10 h-10 text-slate-600 mx-auto mb-3" />
-            <h3 className="text-base font-bold text-white mb-1">Tidak Ada Proyek</h3>
-            <p className="text-xs text-slate-400">
-              Tidak ditemukan proyek dengan kategori atau kata kunci tersebut.
+          <div className="bg-white rounded-2xl p-12 text-center border border-slate-200 max-w-md mx-auto shadow-soft">
+            <Code2 className="w-10 h-10 text-slate-400 mx-auto mb-3" />
+            <h3 className="text-base font-bold text-slate-900 mb-1">Tidak Ada Proyek Ditemukan</h3>
+            <p className="text-xs text-slate-500">
+              Tidak ada proyek yang sesuai dengan kategori atau kata kunci pencarian.
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
             {projects.map((proj) => (
               <ProjectCard key={proj.id} project={proj} />
             ))}
@@ -230,70 +222,79 @@ export default function Home() {
 
       </section>
 
-      {/* Dual-Database Architecture Explanation Section */}
-      <section id="architecture" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-28">
+      {/* Case Studies / Architectural Highlights Section */}
+      <section id="case-studies" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-28">
         
         <div className="text-center max-w-2xl mx-auto mb-12 space-y-2">
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-white">
-            Arsitektur Dual-Database & Pipeline Telemetri
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
+            Case Studies & Architecture Deep-Dives
           </h2>
-          <p className="text-sm text-slate-400">
-            Pemisahan tanggung jawab data untuk performa tinggi, integritas transaksional, dan elastisitas dokumen.
+          <p className="text-sm text-slate-600">
+            Setiap proyek dilengkapi dokumentasi studi kasus teknis, diagram topologi, serta spesifikasi sistem terukur.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           
-          {/* MariaDB Card */}
-          <div className="glass-panel rounded-2xl p-6 border-emerald-500/20 hover:border-emerald-500/40 transition-colors space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center">
-                <Database className="w-5 h-5 text-emerald-400" />
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-white">MariaDB 11.4 (Relasional)</h3>
-                <span className="text-xs font-mono text-emerald-400">Port 3306 • Sequelize ORM</span>
-              </div>
+          <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-soft space-y-3">
+            <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600">
+              <Workflow className="w-5 h-5" />
             </div>
-
-            <p className="text-sm text-slate-300 leading-relaxed">
-              Bertanggung jawab terhadap entitas inti yang memerlukan jaminan transaksi ACID, konsistensi relasi foreign key, dan integritas skema terstruktur.
+            <h3 className="text-base font-bold text-slate-900">Multi-Tier Architecture</h3>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Pemisahan tanggung jawab data antara konsistensi relasional transaksional dan elastisitas dokumen dokumen tidak terstruktur untuk performa optimal.
             </p>
-
-            <div className="p-3 rounded-lg bg-slate-900/80 border border-slate-800 text-xs font-mono space-y-1.5 text-slate-300">
-              <div className="text-emerald-400 font-semibold mb-1">Tabel yang Dikelola:</div>
-              <div>• <code>users</code>: Akun Admin, otentikasi bcrypt & hak akses role</div>
-              <div>• <code>projects</code>: Judul, slug unik, kategori, repo, demo URL</div>
-              <div>• <code>tags</code>: Kamus tech-stack & icon class</div>
-              <div>• <code>project_tags</code>: Pivot table relasi Many-to-Many</div>
-            </div>
           </div>
 
-          {/* MongoDB Card */}
-          <div className="glass-panel rounded-2xl p-6 border-cyan-500/20 hover:border-cyan-500/40 transition-colors space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center">
-                <Layers className="w-5 h-5 text-cyan-400" />
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-white">MongoDB 7.0 (Dokumen NoSQL)</h3>
-                <span className="text-xs font-mono text-cyan-400">Port 27017 • Mongoose ODM</span>
-              </div>
+          <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-soft space-y-3">
+            <div className="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600">
+              <ShieldCheck className="w-5 h-5" />
             </div>
-
-            <p className="text-sm text-slate-300 leading-relaxed">
-              Bertanggung jawab atas konten dokumen fleksibel tanpa batasan kolom tetap dan penyimpanan time-series log audit footprint pengunjung berkecepatan tinggi.
+            <h3 className="text-base font-bold text-slate-900">Production Resiliency</h3>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Penerapan multi-layer guard rails seperti rate limiting, quota enforcement, validasi MIME berkas, dan sub-second automatic link failover.
             </p>
+          </div>
 
-            <div className="p-3 rounded-lg bg-slate-900/80 border border-slate-800 text-xs font-mono space-y-1.5 text-slate-300">
-              <div className="text-cyan-400 font-semibold mb-1">Koleksi yang Dikelola:</div>
-              <div>• <code>project_details</code>: Markdown case study, diagram URL, system specs, changelog</div>
-              <div>• <code>access_logs</code>: Cloudflare client IP, latency ms, User-Agent, audit timestamp</div>
+          <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-soft space-y-3">
+            <div className="w-10 h-10 rounded-xl bg-sky-50 border border-sky-100 flex items-center justify-center text-sky-600">
+              <FileCode2 className="w-5 h-5" />
             </div>
+            <h3 className="text-base font-bold text-slate-900">Open Technical Audit</h3>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Transparansi implementasi kode sumber melalui repositori terbuka, riwayat rilis terperinci, dan spesifikasi lingkungan produksi.
+            </p>
           </div>
 
         </div>
 
+      </section>
+
+      {/* About Section */}
+      <section id="about" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-24">
+        <div className="bg-white rounded-3xl p-8 sm:p-12 border border-slate-200 shadow-soft flex flex-col md:flex-row items-center justify-between gap-8">
+          <div className="space-y-3 max-w-xl">
+            <span className="text-xs font-bold uppercase tracking-wider text-blue-600">
+              About The Platform
+            </span>
+            <h3 className="text-2xl font-extrabold text-slate-900">
+              Engineering with Scalability, Security, & Precision
+            </h3>
+            <p className="text-sm text-slate-600 leading-relaxed">
+              DevShowcase dirancang sebagai repositori terpadu untuk mendokumentasikan hasil riset rekayasa sistem komputer. Menggabungkan frontend modern yang responsif dengan backend berstandar industri untuk memvisualisasikan arsitektur sistem secara komprehensif.
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+            <a
+              href="#projects"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm transition-all text-center"
+            >
+              <span>Explore Projects</span>
+              <ArrowRight className="w-4 h-4" />
+            </a>
+          </div>
+        </div>
       </section>
 
     </div>

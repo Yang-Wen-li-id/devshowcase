@@ -15,9 +15,7 @@ import {
   Search,
   CheckCircle,
   AlertCircle,
-  FileText,
   TrendingUp,
-  Filter,
   ChevronLeft,
   ChevronRight
 } from 'lucide-react';
@@ -28,8 +26,6 @@ import {
   YAxis, 
   Tooltip, 
   ResponsiveContainer, 
-  BarChart, 
-  Bar, 
   CartesianGrid 
 } from 'recharts';
 import { projectsAPI, analyticsAPI } from '../services/api';
@@ -115,13 +111,13 @@ export default function AdminDashboard() {
 
   // Delete Project Handler
   const handleDeleteProject = async (id, title) => {
-    if (!window.confirm(`Yakin ingin menghapus proyek "${title}"? Tindakan ini akan menghapus entitas dari MariaDB dan dokumen MongoDB secara atomik.`)) {
+    if (!window.confirm(`Yakin ingin menghapus proyek "${title}"? Data akan dihapus secara permanen.`)) {
       return;
     }
 
     try {
       await projectsAPI.delete(id);
-      setActionMessage({ type: 'success', text: `Proyek "${title}" berhasil dihapus dari MariaDB dan MongoDB.` });
+      setActionMessage({ type: 'success', text: `Proyek "${title}" berhasil dihapus.` });
       fetchProjects();
       fetchAnalytics(logsPagination.page);
     } catch (err) {
@@ -130,7 +126,7 @@ export default function AdminDashboard() {
     }
   };
 
-  // Edit Project Handler (loads single project with details)
+  // Edit Project Handler
   const handleOpenEdit = async (slug) => {
     try {
       const res = await projectsAPI.getBySlug(slug);
@@ -147,20 +143,20 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="min-h-screen pb-20 bg-grid-pattern">
+    <div className="min-h-screen pb-20 bg-subtle-pattern">
       
-      {/* Top Admin Bar */}
-      <div className="border-b border-slate-800 bg-[#060a14]/90 backdrop-blur-md sticky top-16 z-40">
+      {/* Top Admin Header Bar */}
+      <div className="bg-white border-b border-slate-200 sticky top-16 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
           
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
+            <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600">
               <LayoutDashboard className="w-5 h-5" />
             </div>
             <div>
-              <h1 className="text-xl font-extrabold text-white">Admin Dashboard</h1>
-              <p className="text-xs text-slate-400 font-mono">
-                MariaDB + MongoDB Dual-Store Synchronization & Audit Control
+              <h1 className="text-xl font-extrabold text-slate-900">Admin Dashboard</h1>
+              <p className="text-xs text-slate-500">
+                Manajemen Katalog Proyek & Telemetri Akses Kunjungan
               </p>
             </div>
           </div>
@@ -168,26 +164,26 @@ export default function AdminDashboard() {
           <div className="flex items-center gap-2">
             <button
               onClick={() => setActiveTab('telemetry')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
+              className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 ${
                 activeTab === 'telemetry'
-                  ? 'bg-cyan-500 text-black shadow-glow-cyan'
-                  : 'bg-slate-900 text-slate-300 hover:text-white border border-slate-800'
+                  ? 'bg-blue-600 text-white shadow-sm'
+                  : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200'
               }`}
             >
               <Activity className="w-4 h-4" />
-              Telemetri & Audit Log
+              Telemetri & Audit
             </button>
 
             <button
               onClick={() => setActiveTab('projects')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
+              className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 ${
                 activeTab === 'projects'
-                  ? 'bg-emerald-500 text-black shadow-glow-emerald'
-                  : 'bg-slate-900 text-slate-300 hover:text-white border border-slate-800'
+                  ? 'bg-blue-600 text-white shadow-sm'
+                  : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200'
               }`}
             >
-              <Database className="w-4 h-4" />
-              Manajemen Proyek ({projects.length})
+              <Layers className="w-4 h-4" />
+              Kelola Proyek ({projects.length})
             </button>
           </div>
 
@@ -200,14 +196,14 @@ export default function AdminDashboard() {
         {actionMessage.text && (
           <div className={`p-4 rounded-xl flex items-center justify-between text-xs font-medium border ${
             actionMessage.type === 'success' 
-              ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' 
-              : 'bg-red-500/10 border-red-500/30 text-red-400'
+              ? 'bg-emerald-50 border-emerald-200 text-emerald-800' 
+              : 'bg-red-50 border-red-200 text-red-800'
           }`}>
             <div className="flex items-center gap-2">
-              {actionMessage.type === 'success' ? <CheckCircle className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
+              {actionMessage.type === 'success' ? <CheckCircle className="w-4 h-4 text-emerald-600" /> : <AlertCircle className="w-4 h-4 text-red-600" />}
               <span>{actionMessage.text}</span>
             </div>
-            <button onClick={() => setActionMessage({ type: '', text: '' })} className="underline text-slate-400 hover:text-white">
+            <button onClick={() => setActionMessage({ type: '', text: '' })} className="underline text-slate-500 hover:text-slate-800">
               Tutup
             </button>
           </div>
@@ -222,54 +218,54 @@ export default function AdminDashboard() {
             {/* KPI Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               
-              <div className="glass-panel rounded-2xl p-5 border-slate-800">
+              <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-soft">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-mono uppercase text-slate-400">Total Proyek (MariaDB)</span>
-                  <Database className="w-4 h-4 text-emerald-400" />
+                  <span className="text-xs font-semibold uppercase text-slate-500">Total Proyek</span>
+                  <Layers className="w-4 h-4 text-blue-600" />
                 </div>
-                <div className="text-3xl font-extrabold text-white">
+                <div className="text-3xl font-extrabold text-slate-900">
                   {overview?.totalProjects ?? 0}
                 </div>
-                <span className="text-[11px] text-slate-400 mt-1 block font-mono">
-                  Entitas relasional aktif
+                <span className="text-[11px] text-slate-500 mt-1 block">
+                  Katalog proyek terdaftar
                 </span>
               </div>
 
-              <div className="glass-panel rounded-2xl p-5 border-slate-800">
+              <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-soft">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-mono uppercase text-slate-400">Total Log Akses (MongoDB)</span>
-                  <Activity className="w-4 h-4 text-cyan-400" />
+                  <span className="text-xs font-semibold uppercase text-slate-500">Total Kunjungan</span>
+                  <Activity className="w-4 h-4 text-indigo-600" />
                 </div>
-                <div className="text-3xl font-extrabold text-cyan-400">
+                <div className="text-3xl font-extrabold text-indigo-600">
                   {overview?.totalVisits ?? 0}
                 </div>
-                <span className="text-[11px] text-slate-400 mt-1 block font-mono">
-                  Footprint audit tercatat
+                <span className="text-[11px] text-slate-500 mt-1 block">
+                  Footprint akses tercatat
                 </span>
               </div>
 
-              <div className="glass-panel rounded-2xl p-5 border-slate-800">
+              <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-soft">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-mono uppercase text-slate-400">Rata-rata Respon</span>
-                  <Clock className="w-4 h-4 text-amber-400" />
+                  <span className="text-xs font-semibold uppercase text-slate-500">Waktu Respon Rata-rata</span>
+                  <Clock className="w-4 h-4 text-amber-600" />
                 </div>
-                <div className="text-3xl font-extrabold text-amber-400">
-                  {overview?.avgResponseTime ?? 0} <span className="text-sm font-normal text-slate-400">ms</span>
+                <div className="text-3xl font-extrabold text-amber-600">
+                  {overview?.avgResponseTime ?? 0} <span className="text-sm font-normal text-slate-500">ms</span>
                 </div>
-                <span className="text-[11px] text-slate-400 mt-1 block font-mono">
+                <span className="text-[11px] text-slate-500 mt-1 block">
                   Min: {overview?.minResponseTime ?? 0}ms • Max: {overview?.maxResponseTime ?? 0}ms
                 </span>
               </div>
 
-              <div className="glass-panel rounded-2xl p-5 border-slate-800">
+              <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-soft">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-mono uppercase text-slate-400">Pengunjung Unik</span>
-                  <Users className="w-4 h-4 text-indigo-400" />
+                  <span className="text-xs font-semibold uppercase text-slate-500">Pengunjung Unik</span>
+                  <Users className="w-4 h-4 text-emerald-600" />
                 </div>
-                <div className="text-3xl font-extrabold text-indigo-400">
+                <div className="text-3xl font-extrabold text-emerald-600">
                   {overview?.uniqueVisitors ?? 0}
                 </div>
-                <span className="text-[11px] text-slate-400 mt-1 block font-mono">
+                <span className="text-[11px] text-slate-500 mt-1 block">
                   {overview?.visits24h ?? 0} kunjungan 24 jam terakhir
                 </span>
               </div>
@@ -280,20 +276,20 @@ export default function AdminDashboard() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               
               {/* Daily Trend Chart (2 Cols) */}
-              <div className="lg:col-span-2 glass-panel rounded-2xl p-6 border-slate-800">
+              <div className="lg:col-span-2 bg-white rounded-2xl p-6 border border-slate-200 shadow-soft">
                 <div className="flex items-center justify-between mb-6">
                   <div>
-                    <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                      <TrendingUp className="w-4 h-4 text-cyan-400" />
-                      Tren Kunjungan API & Showcase (14 Hari Terakhir)
+                    <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                      <TrendingUp className="w-4 h-4 text-blue-600" />
+                      Tren Kunjungan Harian (14 Hari Terakhir)
                     </h3>
-                    <p className="text-xs text-slate-400">
-                      Agregasi per hari dari koleksi MongoDB AccessLogs
+                    <p className="text-xs text-slate-500">
+                      Volume kunjungan halaman proyek dan API
                     </p>
                   </div>
                   <button
                     onClick={() => fetchAnalytics(logsPagination.page)}
-                    className="p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white"
+                    className="p-1.5 rounded-lg bg-slate-100 text-slate-600 hover:text-slate-900"
                     title="Refresh Data"
                   >
                     <RefreshCw className="w-4 h-4" />
@@ -304,46 +300,47 @@ export default function AdminDashboard() {
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={trendData}>
                       <defs>
-                        <linearGradient id="cyanGradient" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.4} />
-                          <stop offset="95%" stopColor="#06b6d4" stopOpacity={0.0} />
+                        <linearGradient id="blueGradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#2563eb" stopOpacity={0.25} />
+                          <stop offset="95%" stopColor="#2563eb" stopOpacity={0.0} />
                         </linearGradient>
                       </defs>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-                      <XAxis dataKey="date" stroke="#64748b" fontSize={11} />
-                      <YAxis stroke="#64748b" fontSize={11} allowDecimals={false} />
+                      <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                      <XAxis dataKey="date" stroke="#94a3b8" fontSize={11} />
+                      <YAxis stroke="#94a3b8" fontSize={11} allowDecimals={false} />
                       <Tooltip
                         contentStyle={{
-                          backgroundColor: '#090d16',
-                          borderColor: '#334155',
+                          backgroundColor: '#ffffff',
+                          borderColor: '#e2e8f0',
                           borderRadius: '8px',
-                          color: '#fff',
+                          color: '#0f172a',
                           fontSize: '12px',
+                          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
                         }}
                       />
                       <Area
                         type="monotone"
                         dataKey="visits"
                         name="Kunjungan"
-                        stroke="#06b6d4"
+                        stroke="#2563eb"
                         strokeWidth={2}
                         fillOpacity={1}
-                        fill="url(#cyanGradient)"
+                        fill="url(#blueGradient)"
                       />
                     </AreaChart>
                   </ResponsiveContainer>
                 </div>
               </div>
 
-              {/* Top Paths Bar Chart (1 Col) */}
-              <div className="glass-panel rounded-2xl p-6 border-slate-800 flex flex-col justify-between">
+              {/* Top Paths (1 Col) */}
+              <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-soft flex flex-col justify-between">
                 <div>
-                  <h3 className="text-sm font-bold text-white flex items-center gap-2 mb-1">
-                    <Activity className="w-4 h-4 text-emerald-400" />
-                    Endpoint Paling Sering Diakses
+                  <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2 mb-1">
+                    <Activity className="w-4 h-4 text-blue-600" />
+                    Endpoint Populer
                   </h3>
-                  <p className="text-xs text-slate-400 mb-4">
-                    Top 5 path API yang tercatat
+                  <p className="text-xs text-slate-500 mb-4">
+                    Top path yang paling sering diakses
                   </p>
                 </div>
 
@@ -352,14 +349,14 @@ export default function AdminDashboard() {
                     overview.topPaths.map((item, idx) => (
                       <div key={idx} className="space-y-1">
                         <div className="flex justify-between text-xs font-mono">
-                          <span className="text-slate-300 truncate max-w-[200px]" title={item._id}>
+                          <span className="text-slate-700 truncate max-w-[200px]" title={item._id}>
                             {item._id}
                           </span>
-                          <span className="text-cyan-400 font-bold">{item.count} hit</span>
+                          <span className="text-blue-600 font-bold">{item.count} hit</span>
                         </div>
-                        <div className="w-full h-1.5 rounded-full bg-slate-800 overflow-hidden">
+                        <div className="w-full h-1.5 rounded-full bg-slate-100 overflow-hidden">
                           <div
-                            className="h-full bg-gradient-to-r from-cyan-500 to-indigo-500 rounded-full"
+                            className="h-full bg-blue-600 rounded-full"
                             style={{
                               width: `${Math.min(100, (item.count / (overview.topPaths[0]?.count || 1)) * 100)}%`,
                             }}
@@ -372,43 +369,41 @@ export default function AdminDashboard() {
                   )}
                 </div>
 
-                <div className="mt-6 pt-4 border-t border-slate-800/80 text-[11px] text-slate-400 font-mono">
-                  Support: Cloudflare Tunnel Real-IP Header
+                <div className="mt-6 pt-4 border-t border-slate-100 text-[11px] text-slate-400 font-mono">
+                  Real-time visitor telemetry active
                 </div>
               </div>
 
             </div>
 
-            {/* Raw Access Logs Table from MongoDB */}
-            <div className="glass-panel rounded-2xl p-6 border-slate-800 space-y-4">
+            {/* Raw Access Logs Table */}
+            <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-soft space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                  <h3 className="text-base font-bold text-white flex items-center gap-2">
-                    <Activity className="w-5 h-5 text-cyan-400" />
-                    Log Audit Akses Mentah (MongoDB `access_logs`)
+                  <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                    <Activity className="w-5 h-5 text-blue-600" />
+                    Log Audit Akses Pengunjung
                   </h3>
-                  <p className="text-xs text-slate-400">
-                    Menampilkan footprint IP pengunjung (mendukung reverse proxy/Cloudflare Tunnel), User-Agent, dan durasi respon.
+                  <p className="text-xs text-slate-500">
+                    Rekaman jejak IP pengunjung, durasi respon, dan halaman yang diakses
                   </p>
                 </div>
 
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => fetchAnalytics(logsPagination.page)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-slate-300 hover:text-white text-xs font-mono"
-                  >
-                    <RefreshCw className="w-3.5 h-3.5" />
-                    Refresh Logs
-                  </button>
-                </div>
+                <button
+                  onClick={() => fetchAnalytics(logsPagination.page)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-slate-700 hover:bg-slate-100 text-xs font-mono"
+                >
+                  <RefreshCw className="w-3.5 h-3.5" />
+                  Refresh
+                </button>
               </div>
 
               {/* Table */}
-              <div className="overflow-x-auto rounded-xl border border-slate-800">
+              <div className="overflow-x-auto rounded-xl border border-slate-200">
                 <table className="w-full text-left text-xs font-mono">
-                  <thead className="bg-[#03060f] text-slate-400 border-b border-slate-800 uppercase tracking-wider text-[11px]">
+                  <thead className="bg-slate-50 text-slate-600 border-b border-slate-200 uppercase tracking-wider text-[11px]">
                     <tr>
-                      <th className="py-3 px-4">Waktu (UTC/WIB)</th>
+                      <th className="py-3 px-4">Waktu</th>
                       <th className="py-3 px-4">IP Pengunjung</th>
                       <th className="py-3 px-4">Path Diakses</th>
                       <th className="py-3 px-4">Target Proyek</th>
@@ -416,26 +411,26 @@ export default function AdminDashboard() {
                       <th className="py-3 px-4">User-Agent</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-800/60 bg-[#060a14]">
+                  <tbody className="divide-y divide-slate-100 bg-white">
                     {rawLogs.length > 0 ? (
                       rawLogs.map((log) => (
-                        <tr key={log._id} className="hover:bg-slate-800/40 transition-colors">
-                          <td className="py-3 px-4 text-slate-400 whitespace-nowrap">
+                        <tr key={log._id} className="hover:bg-slate-50 transition-colors">
+                          <td className="py-3 px-4 text-slate-600 whitespace-nowrap">
                             {new Date(log.timestamp).toLocaleString('id-ID')}
                           </td>
-                          <td className="py-3 px-4 font-bold text-cyan-400 whitespace-nowrap">
+                          <td className="py-3 px-4 font-bold text-blue-600 whitespace-nowrap">
                             {log.ipAddress}
                           </td>
-                          <td className="py-3 px-4 text-slate-200 truncate max-w-xs" title={log.path}>
+                          <td className="py-3 px-4 text-slate-800 truncate max-w-xs" title={log.path}>
                             {log.path}
                           </td>
                           <td className="py-3 px-4 whitespace-nowrap">
                             {log.project ? (
-                              <span className="text-emerald-400 font-semibold">
+                              <span className="text-emerald-700 font-semibold">
                                 #{log.targetProjectId} - {log.project.title}
                               </span>
                             ) : log.targetProjectId ? (
-                              <span className="text-slate-400">#{log.targetProjectId}</span>
+                              <span className="text-slate-500">#{log.targetProjectId}</span>
                             ) : (
                               <span className="text-slate-400">-</span>
                             )}
@@ -443,15 +438,15 @@ export default function AdminDashboard() {
                           <td className="py-3 px-4 whitespace-nowrap">
                             <span className={`px-2 py-0.5 rounded text-[11px] font-bold ${
                               log.responseTimeMs < 20 
-                                ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30'
+                                ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                                 : log.responseTimeMs < 60
-                                ? 'bg-amber-500/10 text-amber-400 border border-amber-500/30'
-                                : 'bg-red-500/10 text-red-400 border border-red-500/30'
+                                ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                                : 'bg-red-50 text-red-700 border border-red-200'
                             }`}>
                               {log.responseTimeMs} ms
                             </span>
                           </td>
-                          <td className="py-3 px-4 text-slate-400 truncate max-w-xs" title={log.userAgent}>
+                          <td className="py-3 px-4 text-slate-500 truncate max-w-xs" title={log.userAgent}>
                             {log.userAgent}
                           </td>
                         </tr>
@@ -459,7 +454,7 @@ export default function AdminDashboard() {
                     ) : (
                       <tr>
                         <td colSpan="6" className="py-8 text-center text-slate-400">
-                          Belum ada catatan log audit di MongoDB.
+                          Belum ada catatan log audit.
                         </td>
                       </tr>
                     )}
@@ -468,7 +463,7 @@ export default function AdminDashboard() {
               </div>
 
               {/* Pagination Controls */}
-              <div className="flex items-center justify-between text-xs font-mono text-slate-400 pt-2">
+              <div className="flex items-center justify-between text-xs font-mono text-slate-500 pt-2">
                 <span>
                   Halaman {logsPagination.page} dari {logsPagination.totalPages || 1} ({logsPagination.total} total log)
                 </span>
@@ -476,14 +471,14 @@ export default function AdminDashboard() {
                   <button
                     onClick={() => handlePageChange(logsPagination.page - 1)}
                     disabled={logsPagination.page <= 1}
-                    className="p-1.5 rounded-lg bg-slate-900 border border-slate-700 text-slate-300 disabled:opacity-40"
+                    className="p-1.5 rounded-lg bg-white border border-slate-200 text-slate-700 disabled:opacity-40"
                   >
                     <ChevronLeft className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => handlePageChange(logsPagination.page + 1)}
                     disabled={logsPagination.page >= logsPagination.totalPages}
-                    className="p-1.5 rounded-lg bg-slate-900 border border-slate-700 text-slate-300 disabled:opacity-40"
+                    className="p-1.5 rounded-lg bg-white border border-slate-200 text-slate-700 disabled:opacity-40"
                   >
                     <ChevronRight className="w-4 h-4" />
                   </button>
@@ -511,13 +506,13 @@ export default function AdminDashboard() {
                   value={projectSearch}
                   onChange={(e) => setProjectSearch(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && fetchProjects()}
-                  className="w-full pl-10 pr-4 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-cyan-500"
+                  className="w-full pl-10 pr-4 py-2 rounded-xl bg-white border border-slate-300 text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:border-blue-500"
                 />
               </div>
 
               <button
                 onClick={handleOpenCreate}
-                className="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white text-xs font-bold shadow-glow-cyan transition-all"
+                className="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-sm transition-all"
               >
                 <FolderPlus className="w-4 h-4" />
                 Tambah Proyek Baru
@@ -525,36 +520,36 @@ export default function AdminDashboard() {
             </div>
 
             {/* Projects Table */}
-            <div className="glass-panel rounded-2xl border-slate-800 overflow-hidden">
+            <div className="bg-white rounded-2xl border border-slate-200 shadow-soft overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-[#03060f] text-slate-400 border-b border-slate-800 uppercase tracking-wider text-[11px] font-mono">
+                  <thead className="bg-slate-50 text-slate-600 border-b border-slate-200 uppercase tracking-wider text-[11px] font-mono">
                     <tr>
                       <th className="py-3.5 px-4">ID</th>
                       <th className="py-3.5 px-4">Judul & Slug</th>
                       <th className="py-3.5 px-4">Kategori</th>
                       <th className="py-3.5 px-4">Tech-Stack Tags</th>
                       <th className="py-3.5 px-4">Status</th>
-                      <th className="py-3.5 px-4 text-right">Aksi Atomik</th>
+                      <th className="py-3.5 px-4 text-right">Aksi</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-800/60 bg-[#060a14]">
+                  <tbody className="divide-y divide-slate-100 bg-white">
                     {projects.length > 0 ? (
                       projects.map((proj) => (
-                        <tr key={proj.id} className="hover:bg-slate-800/30 transition-colors">
+                        <tr key={proj.id} className="hover:bg-slate-50 transition-colors">
                           <td className="py-3.5 px-4 font-mono text-slate-400">
                             #{proj.id}
                           </td>
                           <td className="py-3.5 px-4">
-                            <span className="font-bold text-white block text-sm">
+                            <span className="font-bold text-slate-900 block text-sm">
                               {proj.title}
                             </span>
-                            <span className="font-mono text-cyan-400 text-[11px]">
+                            <span className="font-mono text-blue-600 text-[11px]">
                               /{proj.slug}
                             </span>
                           </td>
                           <td className="py-3.5 px-4">
-                            <span className="px-2 py-0.5 rounded text-[11px] font-medium bg-slate-800 text-slate-200 border border-slate-700">
+                            <span className="px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-200">
                               {proj.category}
                             </span>
                           </td>
@@ -562,7 +557,7 @@ export default function AdminDashboard() {
                             <div className="flex flex-wrap gap-1 max-w-xs">
                               {proj.tags && proj.tags.length > 0 ? (
                                 proj.tags.map((t) => (
-                                  <span key={t.id || t.name} className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-cyan-950/40 text-cyan-300 border border-cyan-800/50">
+                                  <span key={t.id || t.name} className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-blue-50 text-blue-700 border border-blue-200">
                                     {t.name}
                                   </span>
                                 ))
@@ -573,11 +568,11 @@ export default function AdminDashboard() {
                           </td>
                           <td className="py-3.5 px-4">
                             {proj.featured ? (
-                              <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-amber-500/10 text-amber-300 border border-amber-500/30">
+                              <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-amber-50 text-amber-700 border border-amber-200">
                                 Featured
                               </span>
                             ) : (
-                              <span className="text-slate-400 text-[11px]">Standard</span>
+                              <span className="text-slate-500 text-[11px]">Standard</span>
                             )}
                           </td>
                           <td className="py-3.5 px-4 text-right">
@@ -586,22 +581,22 @@ export default function AdminDashboard() {
                                 href={`/project/${proj.slug}`}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="p-1.5 rounded-lg bg-slate-800 text-slate-300 hover:text-white"
+                                className="p-1.5 rounded-lg bg-slate-100 text-slate-600 hover:text-blue-600"
                                 title="Lihat Halaman Publik"
                               >
                                 <ExternalLink className="w-3.5 h-3.5" />
                               </a>
                               <button
                                 onClick={() => handleOpenEdit(proj.slug)}
-                                className="p-1.5 rounded-lg bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20"
+                                className="p-1.5 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100"
                                 title="Edit Proyek"
                               >
                                 <Edit className="w-3.5 h-3.5" />
                               </button>
                               <button
                                 onClick={() => handleDeleteProject(proj.id, proj.title)}
-                                className="p-1.5 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20"
-                                title="Hapus Atomik"
+                                className="p-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100"
+                                title="Hapus Proyek"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
                               </button>
@@ -637,8 +632,8 @@ export default function AdminDashboard() {
           setActionMessage({
             type: 'success',
             text: editingProject 
-              ? 'Proyek berhasil diperbarui di MariaDB dan MongoDB.' 
-              : 'Proyek baru berhasil dibuat di kedua database secara atomik.',
+              ? 'Proyek berhasil diperbarui.' 
+              : 'Proyek baru berhasil disimpan.',
           });
         }}
       />

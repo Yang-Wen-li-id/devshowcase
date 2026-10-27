@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { 
   ArrowLeft, 
   Github, 
@@ -11,11 +11,10 @@ import {
   Cpu, 
   GitCommit, 
   Image as ImageIcon,
-  Activity,
-  Layers,
-  Database,
   RefreshCw,
-  ShieldCheck
+  CheckCircle2,
+  ShieldCheck,
+  Workflow
 } from 'lucide-react';
 import { projectsAPI } from '../services/api';
 import MarkdownViewer from '../components/MarkdownViewer';
@@ -25,7 +24,6 @@ import ArchitectureModal from '../components/ArchitectureModal';
 
 export default function ProjectDetail() {
   const { slug } = useParams();
-  const navigate = useNavigate();
 
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -55,11 +53,11 @@ export default function ProjectDetail() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
+      <div className="min-h-screen flex items-center justify-center p-4 bg-subtle-pattern">
         <div className="text-center space-y-3">
-          <RefreshCw className="w-8 h-8 text-cyan-400 animate-spin mx-auto" />
-          <p className="text-sm font-mono text-slate-400">
-            Menggabungkan metadata MariaDB dan dokumen MongoDB...
+          <RefreshCw className="w-8 h-8 text-blue-600 animate-spin mx-auto" />
+          <p className="text-sm font-medium text-slate-500">
+            Memuat dokumentasi dan spesifikasi proyek...
           </p>
         </div>
       </div>
@@ -68,13 +66,13 @@ export default function ProjectDetail() {
 
   if (error || !project) {
     return (
-      <div className="min-h-screen max-w-xl mx-auto px-4 pt-24 text-center">
-        <div className="glass-panel rounded-2xl p-8 border-red-500/30 space-y-4">
-          <h2 className="text-xl font-bold text-white">Proyek Tidak Ditemukan</h2>
-          <p className="text-sm text-slate-400">{error || 'Slug proyek tidak valid.'}</p>
+      <div className="min-h-screen max-w-xl mx-auto px-4 pt-24 text-center bg-subtle-pattern">
+        <div className="bg-white rounded-2xl p-8 border border-slate-200 shadow-soft space-y-4">
+          <h2 className="text-xl font-bold text-slate-900">Proyek Tidak Ditemukan</h2>
+          <p className="text-sm text-slate-500">{error || 'Slug proyek tidak valid.'}</p>
           <Link
             to="/"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-cyan-500 text-black text-xs font-bold"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white text-xs font-semibold hover:bg-blue-700 shadow-sm"
           >
             <ArrowLeft className="w-4 h-4" />
             Kembali ke Showcase
@@ -87,59 +85,59 @@ export default function ProjectDetail() {
   const details = project.details || {};
 
   return (
-    <div className="min-h-screen pb-20 bg-grid-pattern">
+    <div className="min-h-screen pb-24 bg-subtle-pattern">
       
       {/* Top Header & Breadcrumbs */}
-      <div className="border-b border-slate-800/80 bg-slate-950/60 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-4">
+      <div className="bg-white border-b border-slate-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-4">
           
           {/* Breadcrumbs */}
-          <div className="flex items-center gap-2 text-xs font-mono text-slate-400">
-            <Link to="/" className="hover:text-cyan-400 transition-colors flex items-center gap-1">
+          <div className="flex items-center gap-2 text-xs font-medium text-slate-500">
+            <Link to="/" className="hover:text-blue-600 transition-colors flex items-center gap-1">
               <ArrowLeft className="w-3.5 h-3.5" />
               Showcase
             </Link>
             <span>/</span>
-            <span className="text-slate-300">{project.category}</span>
+            <span className="text-slate-700">{project.category}</span>
             <span>/</span>
-            <span className="text-cyan-400 truncate max-w-xs">{project.slug}</span>
+            <span className="text-blue-600 font-semibold truncate max-w-xs">{project.slug}</span>
           </div>
 
           {/* Project Title & Badges */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <div className="flex flex-wrap items-center gap-2 mb-2">
-                <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">
+                <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
                   {project.category}
                 </span>
                 {project.featured && (
-                  <span className="flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-500/15 text-amber-300 border border-amber-500/30">
-                    <Star className="w-3 h-3 fill-amber-300" />
+                  <span className="flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
+                    <Star className="w-3 h-3 fill-amber-500 text-amber-500" />
                     Featured
                   </span>
                 )}
-                <span className="px-2 py-0.5 rounded text-xs font-mono bg-slate-800 text-slate-300 border border-slate-700">
+                <span className="px-2 py-0.5 rounded text-xs font-mono bg-slate-100 text-slate-600 border border-slate-200">
                   {project.license || 'MIT'}
                 </span>
-                <span className="flex items-center gap-1 text-xs text-slate-400 font-mono">
+                <span className="flex items-center gap-1 text-xs text-slate-500 font-mono">
                   <Calendar className="w-3.5 h-3.5" />
                   {new Date(project.created_at).toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' })}
                 </span>
               </div>
 
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight">
                 {project.title}
               </h1>
             </div>
 
             {/* Action Buttons */}
-            <div className="flex flex-wrap items-center gap-3">
+            <div className="flex flex-wrap items-center gap-2.5">
               {details.architectureDiagramUrl && (
                 <button
                   onClick={() => setDiagramModalOpen(true)}
-                  className="flex items-center gap-2 px-3.5 py-2 rounded-lg bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 hover:bg-indigo-500/20 text-xs font-semibold transition-all"
+                  className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-blue-50 border border-blue-200 text-blue-700 hover:bg-blue-100 text-xs font-semibold transition-all"
                 >
-                  <ImageIcon className="w-4 h-4 text-indigo-400" />
+                  <ImageIcon className="w-4 h-4 text-blue-600" />
                   Diagram Arsitektur
                 </button>
               )}
@@ -149,10 +147,10 @@ export default function ProjectDetail() {
                   href={project.repo_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-3.5 py-2 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 hover:text-white hover:bg-slate-700 text-xs font-semibold transition-colors"
+                  className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-white border border-slate-300 text-slate-700 hover:text-slate-900 hover:bg-slate-50 text-xs font-semibold transition-colors shadow-sm"
                 >
                   <Github className="w-4 h-4" />
-                  Source Code
+                  Repository
                 </a>
               )}
 
@@ -161,7 +159,7 @@ export default function ProjectDetail() {
                   href={project.demo_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-cyan-500 to-emerald-500 text-black text-xs font-bold hover:opacity-95 shadow-glow-cyan transition-all"
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-sm transition-all"
                 >
                   <ExternalLink className="w-4 h-4" />
                   Live System
@@ -174,13 +172,13 @@ export default function ProjectDetail() {
           {/* Tags bar */}
           {project.tags && project.tags.length > 0 && (
             <div className="flex flex-wrap items-center gap-1.5 pt-2">
-              <span className="text-xs text-slate-400 font-mono mr-1">Tech Stack:</span>
+              <span className="text-xs text-slate-500 font-medium mr-1">Tech Stack:</span>
               {project.tags.map((tag) => (
                 <span
                   key={tag.id || tag.name}
-                  className="px-2 py-0.5 rounded text-xs font-mono bg-slate-900 border border-slate-700 text-cyan-300 flex items-center gap-1"
+                  className="px-2.5 py-0.5 rounded text-xs font-mono bg-slate-100 border border-slate-200 text-slate-700 flex items-center gap-1"
                 >
-                  <TagIcon className="w-2.5 h-2.5" />
+                  <TagIcon className="w-2.5 h-2.5 text-blue-600" />
                   {tag.name}
                 </span>
               ))}
@@ -194,13 +192,13 @@ export default function ProjectDetail() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
         
         {/* Navigation Tabs */}
-        <div className="flex border-b border-slate-800 mb-6 bg-slate-950/40 rounded-t-xl px-2">
+        <div className="flex border-b border-slate-200 mb-6 bg-white rounded-t-xl px-2 shadow-sm">
           <button
             onClick={() => setActiveTab('docs')}
             className={`flex items-center gap-2 py-3.5 px-5 text-xs font-bold uppercase tracking-wider border-b-2 transition-all ${
               activeTab === 'docs'
-                ? 'border-cyan-400 text-cyan-400 bg-cyan-500/5'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
+                ? 'border-blue-600 text-blue-600 bg-blue-50/50'
+                : 'border-transparent text-slate-500 hover:text-slate-900'
             }`}
           >
             <FileText className="w-4 h-4" />
@@ -211,8 +209,8 @@ export default function ProjectDetail() {
             onClick={() => setActiveTab('specs')}
             className={`flex items-center gap-2 py-3.5 px-5 text-xs font-bold uppercase tracking-wider border-b-2 transition-all ${
               activeTab === 'specs'
-                ? 'border-emerald-400 text-emerald-400 bg-emerald-500/5'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
+                ? 'border-blue-600 text-blue-600 bg-blue-50/50'
+                : 'border-transparent text-slate-500 hover:text-slate-900'
             }`}
           >
             <Cpu className="w-4 h-4" />
@@ -223,8 +221,8 @@ export default function ProjectDetail() {
             onClick={() => setActiveTab('changelog')}
             className={`flex items-center gap-2 py-3.5 px-5 text-xs font-bold uppercase tracking-wider border-b-2 transition-all ${
               activeTab === 'changelog'
-                ? 'border-indigo-400 text-indigo-400 bg-indigo-500/5'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
+                ? 'border-blue-600 text-blue-600 bg-blue-50/50'
+                : 'border-transparent text-slate-500 hover:text-slate-900'
             }`}
           >
             <GitCommit className="w-4 h-4" />
@@ -238,17 +236,17 @@ export default function ProjectDetail() {
           {/* Main Content Body (3 Cols) */}
           <div className="lg:col-span-3">
             {activeTab === 'docs' && (
-              <div className="glass-panel rounded-2xl p-6 sm:p-8 border-slate-800">
+              <div className="bg-white rounded-2xl p-6 sm:p-10 border border-slate-200 shadow-soft">
                 <MarkdownViewer content={details.markdownContent} />
               </div>
             )}
 
             {activeTab === 'specs' && (
               <div className="space-y-6">
-                <div className="glass-panel rounded-2xl p-6 border-slate-800">
-                  <h3 className="text-base font-bold text-white mb-4 flex items-center gap-2">
-                    <Cpu className="w-5 h-5 text-emerald-400" />
-                    Spesifikasi Hardware & Lingkungan Eksekusi
+                <div className="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-soft">
+                  <h3 className="text-base font-bold text-slate-900 mb-4 flex items-center gap-2">
+                    <Cpu className="w-5 h-5 text-blue-600" />
+                    Spesifikasi Lingkungan & Parameter Teknis
                   </h3>
                   <SystemSpecsHUD specs={details.systemSpecs} />
                 </div>
@@ -256,66 +254,66 @@ export default function ProjectDetail() {
             )}
 
             {activeTab === 'changelog' && (
-              <div className="glass-panel rounded-2xl p-6 sm:p-8 border-slate-800">
-                <h3 className="text-base font-bold text-white mb-6 flex items-center gap-2">
-                  <GitCommit className="w-5 h-5 text-indigo-400" />
-                  Milestone & Catatan Rilis Versi
+              <div className="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-soft">
+                <h3 className="text-base font-bold text-slate-900 mb-6 flex items-center gap-2">
+                  <GitCommit className="w-5 h-5 text-blue-600" />
+                  Milestone & Riwayat Rilis Versi
                 </h3>
                 <ChangelogTimeline changelog={details.changelog} />
               </div>
             )}
           </div>
 
-          {/* Right Sidebar: Dual-DB Meta & Architecture Quick View (1 Col) */}
+          {/* Right Sidebar (1 Col) */}
           <div className="space-y-6">
             
             {/* Architecture Diagram Preview Card */}
             {details.architectureDiagramUrl && (
-              <div className="glass-panel rounded-2xl p-4 border-slate-800 space-y-3">
-                <h4 className="text-xs font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
-                  <ImageIcon className="w-3.5 h-3.5 text-indigo-400" />
+              <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-soft space-y-3">
+                <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+                  <ImageIcon className="w-3.5 h-3.5 text-blue-600" />
                   Diagram Topologi
                 </h4>
                 <div 
                   onClick={() => setDiagramModalOpen(true)}
-                  className="relative rounded-lg overflow-hidden border border-slate-700/80 cursor-pointer group"
+                  className="relative rounded-lg overflow-hidden border border-slate-200 cursor-pointer group shadow-sm"
                 >
                   <img
                     src={details.architectureDiagramUrl}
                     alt={`Preview ${project.title}`}
-                    className="w-full h-36 object-cover transition-transform group-hover:scale-105"
+                    className="w-full h-40 object-cover transition-transform group-hover:scale-105"
                   />
-                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                    <span className="text-xs font-semibold text-white bg-black/70 px-2.5 py-1 rounded-md">
-                      Perbesar Diagram
+                  <div className="absolute inset-0 bg-slate-900/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <span className="text-xs font-semibold text-white bg-slate-900/80 px-2.5 py-1 rounded-md">
+                      Buka Diagram
                     </span>
                   </div>
                 </div>
               </div>
             )}
 
-            {/* Dual-Database Audit Footprint Tracker Card */}
-            <div className="glass-panel rounded-2xl p-5 border-slate-800 space-y-4">
-              <h4 className="text-xs font-semibold text-cyan-400 uppercase tracking-wider flex items-center gap-1.5">
-                <Activity className="w-4 h-4 text-cyan-400" />
-                Audit Trail Telemetry
+            {/* Project Quick Overview Card */}
+            <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-soft space-y-3">
+              <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+                <ShieldCheck className="w-4 h-4 text-blue-600" />
+                Project Metadata
               </h4>
-              <p className="text-xs text-slate-300 leading-relaxed">
-                Kunjungan Anda pada halaman proyek ini secara otomatis dicatat oleh middleware backend <code className="text-cyan-300 font-mono">auditLogger.js</code> ke koleksi <code className="text-cyan-300 font-mono">AccessLogs</code> MongoDB untuk audit akses transparan.
-              </p>
-              
-              <div className="p-3 rounded-lg bg-slate-900/90 border border-slate-800 text-[11px] font-mono space-y-1 text-slate-400">
-                <div className="flex justify-between">
-                  <span>Target Project ID:</span>
-                  <span className="text-white font-bold">{project.id}</span>
+              <div className="space-y-2 text-xs">
+                <div className="flex justify-between py-1.5 border-b border-slate-100">
+                  <span className="text-slate-500">Category</span>
+                  <span className="font-semibold text-slate-900">{project.category}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span>SQL Entity:</span>
-                  <span className="text-emerald-400">MariaDB #projects</span>
+                <div className="flex justify-between py-1.5 border-b border-slate-100">
+                  <span className="text-slate-500">License</span>
+                  <span className="font-mono text-slate-900">{project.license || 'MIT'}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span>NoSQL Doc:</span>
-                  <span className="text-cyan-400">MongoDB #project_details</span>
+                <div className="flex justify-between py-1.5 border-b border-slate-100">
+                  <span className="text-slate-500">Identifier</span>
+                  <span className="font-mono text-blue-600">#{project.id}</span>
+                </div>
+                <div className="flex justify-between py-1.5">
+                  <span className="text-slate-500">Status</span>
+                  <span className="font-medium text-emerald-600">Production Ready</span>
                 </div>
               </div>
             </div>
